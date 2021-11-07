@@ -46,6 +46,16 @@ WordCount *word_counts = NULL;
  */
 int num_words(FILE* infile) {
   int num_words = 0;
+  int c;
+  int is_comm = 0;
+  do {
+    c = fgetc(infile);
+    if (feof(infile)) break;
+    if (!isalpha(c)) {
+      num_words++; 
+    }
+    // printf("%c", c);
+  } while(1);
 
   return num_words;
 }
@@ -131,6 +141,8 @@ int main (int argc, char *argv[]) {
     // At least one file specified. Useful functions: fopen(), fclose().
     // The first file can be found at argv[optind]. The last file can be
     // found at argv[argc-1].
+    infile = fopen(argv[optind], "r");
+    total_words = num_words(infile);
   }
 
   if (count_mode) {
