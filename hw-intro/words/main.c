@@ -51,8 +51,11 @@ int num_words(FILE* infile) {
   do {
     c = fgetc(infile);
     if (feof(infile)) break;
-    if (!isalpha(c)) {
+    if (!isalpha(c) && is_comm) {
       num_words++; 
+      is_comm = 0;
+    } else {
+      is_comm = 1;
     }
     // printf("%c", c);
   } while(1);
