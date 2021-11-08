@@ -70,6 +70,23 @@ int num_words(FILE* infile) {
  * Useful functions: fgetc(), isalpha(), tolower(), add_word().
  */
 void count_words(WordCount **wclist, FILE *infile) {
+  char *word = malloc(sizeof(char) * MAX_WORD_LEN);
+  int c;
+  int count = 0;
+  int is_comm = 0;
+  do {
+    c = fgetc(infile);
+    if (feof(infile)) break;
+     if (!isalpha(c) && is_comm) {
+      add_word(wclist, word);
+      count = 0;
+      is_comm = 0;
+    } else {
+      word[count++] = tolower(c);
+      is_comm = 1;
+    }
+  } while(1); 
+
 }
 
 /*
@@ -77,7 +94,7 @@ void count_words(WordCount **wclist, FILE *infile) {
  * Useful function: strcmp().
  */
 static bool wordcount_less(const WordCount *wc1, const WordCount *wc2) {
-  return 0;
+  return wc1->count < wc2->count;
 }
 
 // In trying times, displays a helpful message.
@@ -145,12 +162,14 @@ int main (int argc, char *argv[]) {
     // The first file can be found at argv[optind]. The last file can be
     // found at argv[argc-1].
     infile = fopen(argv[optind], "r");
-    total_words = num_words(infile);
   }
 
   if (count_mode) {
+    total_words = num_words(infile);
+
     printf("The total number of words is: %i\n", total_words);
   } else {
+    count_words(&word_counts, infile);
     wordcount_sort(&word_counts, wordcount_less);
 
     printf("The frequencies of each word are: \n");
