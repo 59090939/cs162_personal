@@ -1,0 +1,9 @@
+1. The output of the problem is different. Because the threads work concurrently, not simultaneously.
+
+2. No.
+
+3. No. Because the address of common is same.
+
+4. The value is 0, 1, 2, 3.
+
+5. Not all threads run before the program exits, because the main thread exit before then.
