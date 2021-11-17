@@ -7,34 +7,26 @@
 
 #define NUM_INTS (1 << 12)
 
-static void
-check_zero(int* buffer, int len)
-{
+static void check_zero(int* buffer, int len) {
   for (int i = 0; i != len; i++) {
     ASSERT(buffer[i] == 0);
   }
 }
 
-static void
-fill(int* buffer, int len)
-{
+static void fill(int* buffer, int len) {
   for (int i = 0; i != len; i++) {
     buffer[i] = 0x05158E57;
   }
 }
 
-static void*
-test_alloc(int num_ints)
-{
+static void* test_alloc(int num_ints) {
   int* ptr = calloc(num_ints, sizeof(int));
   check_zero(ptr, num_ints);
   fill(ptr, num_ints);
   return ptr;
 }
 
-void
-test_main (void)
-{
+void test_main(void) {
   int* p = test_alloc(NUM_INTS);
   int* q = test_alloc(NUM_INTS);
 
@@ -51,12 +43,10 @@ test_main (void)
   free(s);
 }
 
-int
-main (int argc UNUSED, char *argv[] UNUSED)
-{
+int main(int argc UNUSED, char* argv[] UNUSED) {
   test_name = "malloc-fit";
-  msg ("begin");
+  msg("begin");
   test_main();
-  msg ("end");
+  msg("end");
   return 0;
 }

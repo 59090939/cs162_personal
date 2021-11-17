@@ -13,6 +13,8 @@ pt-bad-read pt-write-code pt-write-code2 pt-grow-stk-sc pt-stk-oflow)
 
 tests/memory_PROGS = $(tests/memory_TESTS)
 
+tests/memory/sbrk-oom-2.output: TIMEOUT = 300
+
 # I avoided tests/main.c to minimize dependency on the userprog project.
 tests/memory/sbrk-page_SRC = tests/memory/sbrk-simple.c tests/memory/sbrk-page.c
 tests/memory/sbrk-small_SRC = tests/memory/sbrk-simple.c tests/memory/sbrk-small.c

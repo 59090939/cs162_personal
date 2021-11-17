@@ -7,25 +7,19 @@
 
 #define NUM_INTS (1 << 12)
 
-static void
-check_zero(int* buffer, int len)
-{
+static void check_zero(int* buffer, int len) {
   for (int i = 0; i != len; i++) {
     ASSERT(buffer[i] == 0);
   }
 }
 
-static void
-fill(int* buffer, int len)
-{
+static void fill(int* buffer, int len) {
   for (int i = 0; i != len; i++) {
     buffer[i] = 0x05158E57;
   }
 }
 
-void
-test_main (void)
-{
+void test_main(void) {
   int* buffer = calloc(NUM_INTS, sizeof(int));
   check_zero(buffer, NUM_INTS);
   fill(buffer, NUM_INTS);
@@ -36,12 +30,10 @@ test_main (void)
   check_zero(new_buffer, NUM_INTS);
 }
 
-int
-main (int argc UNUSED, char *argv[] UNUSED)
-{
+int main(int argc UNUSED, char* argv[] UNUSED) {
   test_name = "malloc-free";
-  msg ("begin");
+  msg("begin");
   test_main();
-  msg ("end");
+  msg("end");
   return 0;
 }

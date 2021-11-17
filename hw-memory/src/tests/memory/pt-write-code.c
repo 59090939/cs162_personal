@@ -4,19 +4,15 @@
 #include "tests/lib.h"
 #include "tests/main.h"
 
-void
-test_main (void)
-{
-  *(int *) test_main = 0;
-  fail ("writing the code segment succeeded");
+void test_main(void) {
+  *(int*)test_main = 0;
+  fail("writing the code segment succeeded");
 }
 
-int
-main (int argc UNUSED, char *argv[] UNUSED)
-{
+int main(int argc UNUSED, char* argv[] UNUSED) {
   test_name = "pt-write-code";
-  msg ("begin");
+  msg("begin");
   test_main();
-  msg ("end");
+  msg("end");
   return 0;
 }

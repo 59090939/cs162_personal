@@ -1,4 +1,4 @@
-BUILD_SUBDIRS = threads userprog vm filesys
+BUILD_SUBDIRS = threads userprog vm filesys memory
 
 all::
 	@echo "Run 'make' in subdirectories: $(BUILD_SUBDIRS)."
@@ -27,3 +27,7 @@ cscope.files::
 
 cscope:: cscope.files
 	cscope -b -q -k
+
+format::
+	find . -name build -prune -o -type f -name '*.[ch]' -print | \
+	xargs clang-format -i -style=file
