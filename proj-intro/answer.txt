@@ -1,12 +1,12 @@
 1. 0xc0000008
-2. 0x80488ee
+2. eip=0x80488ee
 3. _start
 4. 
-080488e8 <_start>:
+void _start(int argc, char* argv[]) { exit(main(argc, argv)); }
  80488e8:	55                   	push   %ebp
  80488e9:	89 e5                	mov    %esp,%ebp
  80488eb:	83 ec 18             	sub    $0x18,%esp
- 80488ee:	8b 45 0c             	mov    0xc(%ebp),%eax
+ 80488ee:	8b 45 0c             	mov    0xc(%ebp),%eax   // Here is error.
  80488f1:	89 44 24 04          	mov    %eax,0x4(%esp)
  80488f5:	8b 45 08             	mov    0x8(%ebp),%eax
  80488f8:	89 04 24             	mov    %eax,(%esp)
@@ -17,3 +17,67 @@
 Before calling the callee, the caller has to subtract esp and load context into it.
 
 5. The word in the memory at the address ebp + 12 is not allowed to access because of system protection.
+
+6. The running thread address is 0xc000e000 and name is "main". The strcture of another one is below:
+
+pintos-debug: dumplist #0: 0xc000e000 {tid = 1, status = THREAD_RUNNING, name = "main", '\000' <repeats 11 times>, stack = 0xc000edbc
+"\001", priority = 31, allelem = {prev = 0xc0039c18 <all_list>, next = 0xc0104020}, elem = {prev = 0xc0039c08 <ready_list>, next = 0xc
+0039c10 <ready_list+8>}, pcb = 0xc010500c, magic = 3446325067}
+
+pintos-debug: dumplist #1: 0xc0104000 {tid = 2, status = THREAD_BLOCKED, name = "idle", '\000' <repeats 11 times>, stack = 0xc0104f14
+"", priority = 0, allelem = {prev = 0xc000e020, next = 0xc0039c20 <all_list+8>}, elem = {prev = 0xc0039c08 <ready_list>, next = 0xc003
+9c10 <ready_list+8>}, pcb = 0x0, magic = 3446325067}
+
+7.
+#0  process_execute (file_name=0xc0007d50 "do-nothing") at ../../userprog/process.c:55
+#1  0xc0020888 in run_task (argv=0xc0039b0c <argv+12>) at ../../threads/init.c:279
+#2  0xc00209fe in run_actions (argv=0xc0039b0c <argv+12>) at ../../threads/init.c:352
+#3  0xc00203d9 in main () at ../../threads/init.c:138
+
+8. 
+The running thread address is 0xc010b000 and name is "doing-nothing".
+Other threads: 
+pintos-debug: dumplist #0: 0xc000e000 {tid = 1, status = THREAD_BLOCKED, name = "main", '\000' <repeats 11 times>, stack = 0xc000ee7c
+"", priority = 31, allelem = {prev = 0xc0039c18 <all_list>, next = 0xc0104020}, elem = {prev = 0xc003b638 <temporary+4>, next = 0xc003
+b640 <temporary+12>}, pcb = 0xc010500c, magic = 3446325067}
+
+pintos-debug: dumplist #1: 0xc0104000 {tid = 2, status = THREAD_BLOCKED, name = "idle", '\000' <repeats 11 times>, stack = 0xc0104f14
+"", priority = 0, allelem = {prev = 0xc000e020, next = 0xc010b020}, elem = {prev = 0xc0039c08 <ready_list>, next = 0xc0039c10 <ready_l
+ist+8>}, pcb = 0x0, magic = 3446325067}
+
+pintos-debug: dumplist #2: 0xc010b000 {tid = 3, status = THREAD_RUNNING, name = "do-nothing\000\000\000\000\000", stack = 0xc010bfd4 "
+", priority = 31, allelem = {prev = 0xc0104020, next = 0xc0039c20 <all_list+8>}, elem = {prev = 0xc0039c08 <ready_list>, next = 0xc003
+9c10 <ready_list+8>}, pcb = 0x0, magic = 3446325067}
+
+9. #0  start_process (file_name_=0xc010a000) at ../../userprog/process.c:73
+address = 0xc010b000
+
+10. 
+$1 = {edi = 0x0, esi = 0x0, ebp = 0x0, esp_dummy = 0x0, ebx = 0x0, edx = 0x0, ecx = 0x0, eax = 0x0, gs = 0x23,
+fs = 0x23, es = 0x23, ds = 0x23, vec_no = 0x0, error_code = 0x0, frame_pointer = 0x0, eip = 0x80488e8, 
+cs = 0x1b, eflags = 0x202, esp = 0xc0000000, ss = 0x23}
+
+11. iret means interupt return.
+ 
+12.
+eax            0x0      0
+ecx            0x0      0
+edx            0x0      0
+ebx            0x0      0
+esp            0xc0000000       0xc0000000
+ebp            0x0      0x0
+esi            0x0      0
+edi            0x0      0
+eip            0x80488e8        0x80488e8
+eflags         0x202    [ IF ]
+cs             0x1b     27
+ss             0x23     35
+ds             0x23     35
+es             0x23     35
+fs             0x23     35
+gs             0x23     35
+
+13.
+#0  _start (argc=-268370093, argv=0xf000ff53) at ../../lib/user/entry.c:6
+#1  0xf000ff53 in ?? ()
+
