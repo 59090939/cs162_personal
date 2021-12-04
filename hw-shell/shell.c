@@ -133,17 +133,41 @@ int main(unused int argc, unused char* argv[]) {
     if (fundex >= 0) {
       cmd_table[fundex].fun(tokens);
     } else {
-      /* REPLACE this to run commands as programs. */
+      /* REPLACE this to run commands as programs. */      
       if (tokens_get_length(tokens) == 2) {
-        char* path = tokens_get_token(tokens, 0);
+        char* program = tokens_get_token(tokens, 0);
         char* arg = tokens_get_token(tokens, 1);
-        int pid = fork() ;
+        int pid = fork();
+        int error = 0;
         if (pid == 0) {
-          execl(path, arg);
+          error = execl(program, arg);
+          if (error == -1) {
+            // fprintf(stdout, "error: %d\n", error);
+            char* _paths = getenv("PATH");
+            char* paths = (char*) malloc(strlen(_paths) + 1);
+            paths = _paths;
+            char* path;
+            char* curr_path;
+            path = strsep(&paths, ":");
+            while (path != NULL&& error == -1) {
+              // fprintf(stdout, "%s\n", path);
+              // fprintf(stdout, "%s\n", paths);
+              curr_path = (char*) malloc(strlen(path) + 1 +strlen(program) + 10);
+              strcpy(curr_path, path);
+              strcat(curr_path, "/");
+              strcat(curr_path, program);
+              path = strsep(&paths, ":");
+              error = execl(curr_path, curr_path, arg, NULL);
+            }
+            if (error == -1) fprintf(stdout, "This shell cannot run this command\n");
+            return;
+          }
         } else {
-          int returnStatus;    
+          int returnStatus;
           waitpid(pid, &returnStatus, 0);
+          
         }
+
       }else {
         fprintf(stdout, "This shell doesn't know how to run programs.\n");
       }
